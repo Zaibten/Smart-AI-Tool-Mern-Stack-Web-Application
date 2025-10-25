@@ -375,7 +375,7 @@ if (!tool) {
 
           {/* Tool Description */}
           <p className="text-sm text-text-muted font-['Public_Sans'] leading-normal mb-3">
-            {t.new_description || t.description}
+            {t.details || t.description}
           </p>
 
           {/* Tool Footer */}
