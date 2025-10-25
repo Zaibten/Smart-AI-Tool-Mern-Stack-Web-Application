@@ -1034,7 +1034,7 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
 
   {/* Tool Description */}
   <p className="text-base font-medium text-text-muted font-['Public_Sans'] leading-normal mb-3">
-    {tool.new_description || tool.description}
+    {tool.details || tool.description}
   </p>
 
   {/* Tool Footer */}
