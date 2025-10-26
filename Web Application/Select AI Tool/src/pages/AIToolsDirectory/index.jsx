@@ -332,7 +332,7 @@ const fetchSearchResults = async () => {
   setLoading(true);
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/tools/search?q=${encodeURIComponent(searchQuery)}`
+      `${import.meta.env.VITE_API_URL}/api/searchtools?q=${encodeURIComponent(searchQuery)}`
     );
     setAiTools(res.data);
   } catch (err) {
