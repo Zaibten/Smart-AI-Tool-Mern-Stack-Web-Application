@@ -69,7 +69,7 @@ const AllToolsSection = () => {
           </div>
 
           <p className="text-sm text-text-muted leading-normal mb-3">
-            {tool.new_description || tool.description}
+            {tool.details || tool.description}
           </p>
 
           <div className="flex items-center justify-between flex-wrap gap-2.5">

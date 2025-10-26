@@ -332,7 +332,7 @@ const fetchSearchResults = async () => {
   setLoading(true);
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/tools/search?q=${encodeURIComponent(searchQuery)}`
+      `${import.meta.env.VITE_API_URL}/api/searchtools?q=${encodeURIComponent(searchQuery)}`
     );
     setAiTools(res.data);
   } catch (err) {
@@ -1034,7 +1034,7 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
 
   {/* Tool Description */}
   <p className="text-base font-medium text-text-muted font-['Public_Sans'] leading-normal mb-3">
-    {tool.new_description || tool.description}
+    {tool.details || tool.description}
   </p>
 
   {/* Tool Footer */}
@@ -1066,7 +1066,7 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
       size="small"
         onClick={(e) => {
     e.stopPropagation(); // Prevents card click
-    window.open(tool.link, "_blank"); // Open the link
+    window.open(tool.official_link, "_blank"); // Open the link
   }}
       className="whitespace-nowrap leading-none"
     />

@@ -227,7 +227,7 @@ if (!tool) {
           {/* Action Buttons */}
 <div className="flex gap-3 flex-wrap">
   <button
-  onClick={() => window.open(tool.link, "_blank")}
+  onClick={() => window.open(tool.official_link, "_blank")}
   className="bg-[#8ecaff] text-black text-sm sm:text-base px-5 py-2 rounded border-2 border-black shadow-[1px_3px_1px_#000000] active:scale-110 active:shadow-lg transition-transform duration-150"
 >
   Visit Website
@@ -375,7 +375,7 @@ if (!tool) {
 
           {/* Tool Description */}
           <p className="text-sm text-text-muted font-['Public_Sans'] leading-normal mb-3">
-            {t.new_description || t.description}
+            {t.details || t.description}
           </p>
 
           {/* Tool Footer */}
