@@ -1006,29 +1006,51 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
           </span>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {tool.profession?.map((prof, i) => (
-          <Button
-            key={i}
-            text={prof}
-            text_font_size="14"
-            text_color="#000000"
-            fill_background_color="#ffffff"
-            border_border="1px solid #000000"
-            border_border_radius="14px"
-            effect_box_shadow="1px 2px 1px #000000"
-            padding="4px 14px"
-            layout_width="auto"
-            position="relative"
-            layout_gap="4px"
-            margin="0"
-            variant="secondary"
-            size="small"
-            onClick={() => {}}
-            className="text-sm"
-          />
-        ))}
-      </div>
+    <div className="flex flex-wrap gap-2">
+  {/* Show only the first profession */}
+  {tool.profession && tool.profession.length > 0 && (
+    <Button
+      text={tool.profession[0]}
+      text_font_size="14"
+      text_color="#000000"
+      fill_background_color="#ffffff"
+      border_border="1px solid #000000"
+      border_border_radius="14px"
+      effect_box_shadow="1px 2px 1px #000000"
+      padding="4px 14px"
+      layout_width="auto"
+      position="relative"
+      layout_gap="4px"
+      margin="0"
+      variant="secondary"
+      size="small"
+      className="text-sm"
+    />
+  )}
+
+  {/* If more professions exist, show "+N" button */}
+  {tool.profession && tool.profession.length > 1 && (
+    <Button
+      text={`+${tool.profession.length - 1} more`}
+      text_font_size="14"
+      text_color="#000000"
+      fill_background_color="#ffff7f"
+      border_border="1px solid #000000"
+      border_border_radius="14px"
+      effect_box_shadow="1px 2px 1px #000000"
+      padding="4px 14px"
+      layout_width="auto"
+      position="relative"
+      layout_gap="4px"
+      margin="0"
+      variant="secondary"
+      size="small"
+      onClick={() => alert(`Other professions: ${tool.profession.slice(1).join(", ")}`)}
+      className="text-sm"
+    />
+  )}
+</div>
+
     </div>
   </div>
 
