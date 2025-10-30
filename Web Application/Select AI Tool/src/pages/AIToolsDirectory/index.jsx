@@ -231,9 +231,10 @@ useEffect(() => {
       });
 
       let tools = res.data.map(tool => ({
-        ...tool,
-        rating: parseFloat((Math.random() * (4.9 - 4.2) + 4.2).toFixed(1)),
-      }));
+  ...tool,
+rating: parseFloat((Math.random() * 3 + 2).toFixed(1)), // clean 1-decimal rating like 4.7
+}));
+
 
       if (selectedRatings.length > 0) {
         tools = tools.filter(tool =>
@@ -271,7 +272,7 @@ const handleSortChange = (filter) => {
       break;
     case "Free Tools":
       sortedTools = sortedTools.filter(tool =>
-        tool.pricing?.toLowerCase().includes("free")
+        tool.pricing?.toLowerCase().includes("Free")
       );
       break;
     case "Default":
@@ -404,7 +405,7 @@ const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
            <div
   onClick={() => {
     setFreeMode(!freeMode);
-    setSelectedPricing(!freeMode ? "free" : ""); // set "Free" when toggled on, reset when off
+    setSelectedPricing(!freeMode ? "Free" : ""); // set "Free" when toggled on, reset when off
   }}
   className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${
     freeMode ? "bg-green-500" : "bg-gray-300"
@@ -741,7 +742,7 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
         margin="0"
         variant="primary"
         size="medium"
-        onClick={() => setSelectedPricing("free")}
+        onClick={() => setSelectedPricing("Free")}
         className="flex items-center gap-2"
       />
       <Button
@@ -759,7 +760,7 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
         margin="0"
         variant="primary"
         size="medium"
-        onClick={() => setSelectedPricing("paid")}
+        onClick={() => setSelectedPricing("Paid")}
         className="flex items-center gap-2"
       />
     </div>
@@ -1067,7 +1068,7 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
       </span>
       <div className="w-1.25 h-1.25 bg-text-mutedMedium rounded-sm"></div>
       <span className="text-sm font-medium text-text-muted font-['Public_Sans']">
-        {tool?.pricing?.toLowerCase().includes("free") ? "100% Free" : tool?.pricing}
+        {tool?.pricing?.toLowerCase().includes("Free") ? "100% Free" : tool?.pricing}
       </span>
     </div>
 
