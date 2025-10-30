@@ -1483,36 +1483,80 @@ app.post("/tools/upload", upload.single("excelFile"), async (req, res) => {
     const workbook = XLSX.read(fileBuffer, { type: "buffer" });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json(sheet);
 
-    const tools = data.map((row) => ({
-      name: row.name || "",
-      description: row.description || "",
-      category: row.category || "",
-      link: row.link || "",
-      rating: row.rating || 0,
-      pricing: row.pricing || "",
-      official_link: row.official_link || "",
-      availability: row.availability || "",
-      details: row.details || "",
-      profession: row.profession ? row.profession.split(",").map((s) => s.trim()) : [],
-      tags: row.tags ? row.tags.split(",").map((s) => s.trim()) : [],
-      new_description: row.new_description || "",
-      image_url: row.image_url || "",
-      overviewimg: row.overviewimg || "",
-      date: row.date || "",
-      featured: row.featured === "true" || row.featured === true, // ✅ Excel column support
-    }));
+    // ✅ Get headers (even duplicates)
+    const range = XLSX.utils.decode_range(sheet["!ref"]);
+    const headers = [];
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cell = sheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      headers.push(cell ? cell.v : `Column${C}`);
+    }
 
+    // ✅ Convert sheet to JSON (including all columns)
+    const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+    const headerRow = data[0];
+    const rows = data.slice(1);
+
+    // ✅ Parse each row manually
+// ✅ Parse each row manually
+const tools = rows.map((row) => {
+  const obj = {};
+  const professions = [];
+
+  headerRow.forEach((header, index) => {
+    const key = header?.toLowerCase().trim();
+    const value = row[index] ?? "";
+
+    if (key === "profession" && value) {
+      professions.push(value);
+    } else if (key) {
+      obj[key] = value;
+    }
+  });
+
+  // ✅ Convert rating and round to 1 decimal
+  const ratingValue = obj.rating ? parseFloat(obj.rating) : 0;
+  const roundedRating = isNaN(ratingValue)
+    ? 0
+    : Math.round(ratingValue * 10) / 10; // ✅ round to 1 decimal
+
+  return {
+    name: obj.name || "",
+    description: obj.description || "",
+    category: obj.category || "",
+    link: obj.link || "",
+    rating: roundedRating, // ✅ store with 1 decimal precision
+    pricing: obj.pricing || "",
+    official_link: obj.official_link || "",
+    availability: obj.availability || "",
+    details: obj.details || "",
+    profession: professions.flatMap(p =>
+      p.split(",").map(s => s.trim()).filter(Boolean)
+    ),
+    tags: obj.tags ? obj.tags.split(",").map((s) => s.trim()) : [],
+    new_description: obj.new_description || "",
+    image_url: obj.image_url || "",
+    date: obj.date || "",
+    overviewimg: obj.overviewimg || "",
+    featured: obj.featured === "true" || obj.featured === true,
+  };
+});
+
+
+    // ✅ Save to MongoDB
     await Tool.insertMany(tools);
 
-    res.send(`<h2 class="text-green-600 font-bold">Successfully uploaded ${tools.length} tools!</h2>
-              <a href="/tools" class="text-blue-600 hover:underline">Go back to tools page</a>`);
+    res.send(`
+      <h2 class="text-green-600 font-bold">Successfully uploaded ${tools.length} tools!</h2>
+      <a href="/tools" class="text-blue-600 hover:underline">Go back to tools page</a>
+    `);
   } catch (err) {
-    console.error(err);
+    console.error("Excel upload error:", err);
     res.status(500).send("Error processing Excel file: " + err.message);
   }
 });
+
 
 
 // 📘 Tool Schema with Featured Boolean
@@ -1765,6 +1809,15 @@ app.delete("/api/tools/:id", async (req, res) => {
 //   res.send(html);
 // });
 
+// Delete all tools
+app.delete("/api/tools", async (req, res) => {
+  try {
+    await Tool.deleteMany({});
+    res.json({ message: "All tools deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Error deleting all tools" });
+  }
+});
 
 
 // ===== Tools Page with Pagination ===== //
@@ -1789,30 +1842,39 @@ app.get("/tools", async (req, res) => {
 
     <!-- Buttons Section -->
 <div class="w-full max-w-5xl flex justify-end mb-4 gap-3">
+  <!-- Upload Excel Button -->
   <a href="/tools/upload" 
      class="flex items-center gap-2 bg-green-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-700 hover:shadow-lg transition-all duration-300 font-semibold">
-    <!-- Upload Icon (SVG) -->
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12v8m0 0l-4-4m4 4l4-4m-4-8V4m0 0l-4 4m4-4l4 4"/>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12v8m0 0l-4-4m4 4l4-4m-4-8V4m0 0l-4 4m4-4l4 4"/>
     </svg>
     Upload Excel
   </a>
 
-<!-- Proceed to Home Button -->
-<a href="/" 
-   class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 
-          text-white px-5 py-2 rounded-lg shadow-md hover:shadow-lg 
-          hover:from-blue-700 hover:to-blue-600 
-          transition-all duration-300 font-semibold">
-  <!-- Home Icon (SVG) -->
-  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-          d="M3 9l9-7 9 7v11a2 2 0 01-2 2h-4a2 2 0 01-2-2V12H9v8a2 2 0 01-2 2H3a2 2 0 01-2-2V9z"/>
-  </svg>
-  Proceed to Home
-</a>
+  <!-- Proceed to Home -->
+  <a href="/" 
+     class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-300 font-semibold">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M3 9l9-7 9 7v11a2 2 0 01-2 2h-4a2 2 0 01-2-2V12H9v8a2 2 0 01-2 2H3a2 2 0 01-2-2V9z"/>
+    </svg>
+    Home
+  </a>
 
+  <!-- ✅ Delete All Tools Button -->
+  <form onsubmit="return confirmDeleteAll()" method="POST" action="/api/tools?_method=DELETE">
+    <button type="submit" 
+            class="flex items-center gap-2 bg-red-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-red-700 hover:shadow-lg transition-all duration-300 font-semibold">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+      Delete All
+    </button>
+  </form>
 </div>
+
 
     <div class="w-full max-w-5xl bg-white rounded-lg shadow-lg p-6 mb-8">
       <h2 class="text-2xl font-semibold mb-4">Create New Tool</h2>
