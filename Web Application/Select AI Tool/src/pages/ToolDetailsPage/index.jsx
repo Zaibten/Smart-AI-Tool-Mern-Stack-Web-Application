@@ -309,7 +309,7 @@ if (!tool) {
       </span>
     </div>
 
-    {/* <div>
+    <div>
   <h3 className="font-semibold mb-2">Profession</h3>
   <div className="flex flex-wrap gap-2">
     {tool.profession?.map((prof) => (
@@ -321,30 +321,8 @@ if (!tool) {
       </span>
     ))}
   </div>
-</div> */}
-
-<div>
-  <h3 className="font-semibold mb-2">Profession</h3>
-
-  <div className="flex flex-wrap gap-2">
-    {[
-      ...(Array.isArray(tool.profession) ? tool.profession : [tool.profession]),
-      ...(Array.isArray(tool.profession2) ? tool.profession2 : [tool.profession2]),
-      ...(Array.isArray(tool.profession3) ? tool.profession3 : [tool.profession3]),
-      ...(Array.isArray(tool.profession4) ? tool.profession4 : [tool.profession4]),
-      ...(Array.isArray(tool.profession5) ? tool.profession5 : [tool.profession5]),
-    ]
-      .filter((prof) => prof && String(prof).trim() !== "")
-      .map((prof, index) => (
-        <span
-          key={`${prof}-${index}`}
-          className="bg-white border border-black px-3 py-1 rounded-full text-sm"
-        >
-          {String(prof).trim()}
-        </span>
-      ))}
-  </div>
 </div>
+
 
 {/* Featured / More Tools Section */}
 <div className="flex flex-col gap-6 w-full">

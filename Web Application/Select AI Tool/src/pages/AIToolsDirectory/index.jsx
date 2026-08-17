@@ -49,6 +49,14 @@ const AIToolsDirectory = () => {
 
   const [showScroll, setShowScroll] = useState(false);
 
+  // NEW: dedicated state for the "all professions" modal, so we don't
+  // reuse the contact-form modal state for something unrelated.
+  const [professionModal, setProfessionModal] = useState({
+    open: false,
+    toolName: "",
+    professions: [],
+  });
+
   const ratings = [
     { value: 5, label: "5 Stars" },
     { value: 4, label: "4+ Stars" },
@@ -76,6 +84,18 @@ const AIToolsDirectory = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close the professions modal on Escape for keyboard users
+  useEffect(() => {
+    if (!professionModal.open) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setProfessionModal((prev) => ({ ...prev, open: false }));
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [professionModal.open]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -275,6 +295,20 @@ const AIToolsDirectory = () => {
     }
   };
 
+  // NEW: opens the professions modal for a given tool instead of alert()
+  const openProfessionModal = (e, tool) => {
+    e.stopPropagation();
+    setProfessionModal({
+      open: true,
+      toolName: tool?.name || "",
+      professions: tool?.profession || [],
+    });
+  };
+
+  const closeProfessionModal = () => {
+    setProfessionModal((prev) => ({ ...prev, open: false }));
+  };
+
   const LocalChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
     return (
       <div className="flex flex-wrap gap-2">
@@ -417,7 +451,7 @@ const AIToolsDirectory = () => {
               />
             </nav>
 
-            {/* Modal */}
+            {/* Contact Modal */}
             {modalOpen && (
               <div
                 style={{
@@ -505,6 +539,146 @@ const AIToolsDirectory = () => {
               </div>
             )}
 
+            {/* All Professions Modal */}
+            {professionModal.open && (
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="profession-modal-title"
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  backdropFilter: "blur(5px)",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  zIndex: 999,
+                  padding: "1rem",
+                }}
+                onClick={closeProfessionModal}
+              >
+                <div
+                  className="profession-modal-box"
+                  style={{
+                    background: "#ffffff",
+                    borderRadius: "16px",
+                    border: "2px solid #000000",
+                    boxShadow: "4px 6px 1px #000000",
+                    width: "100%",
+                    maxWidth: "440px",
+                    maxHeight: "80vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Header */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
+                      gap: "12px",
+                      padding: "22px 22px 16px 22px",
+                      borderBottom: "2px solid #000000",
+                    }}
+                  >
+                    <div>
+                      <p className="text-xs font-semibold tracking-wide uppercase text-gray-500 font-['Public_Sans'] mb-1">
+                        All Professions
+                      </p>
+                      <h2
+                        id="profession-modal-title"
+                        className="text-xl font-bold text-text-primary font-['Lexend_Mega'] leading-snug"
+                      >
+                        {professionModal.toolName}
+                      </h2>
+                    </div>
+                    <button
+                      onClick={closeProfessionModal}
+                      aria-label="Close"
+                      className="flex-shrink-0 flex items-center justify-center"
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "8px",
+                        border: "2px solid #000000",
+                        background: "#ffffff",
+                        fontSize: "18px",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        lineHeight: 1,
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#ffe5e5")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "#ffffff")}
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  {/* Body: scrollable list of professions */}
+                  <div
+                    style={{
+                      padding: "18px 22px 22px 22px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    <div className="flex flex-wrap gap-2.5">
+                      {professionModal.professions.map((prof, idx) => (
+                        <span
+                          key={`${prof}-${idx}`}
+                          className="text-sm font-semibold text-text-primary font-['Public_Sans']"
+                          style={{
+                            background: idx === 0 ? "#ffff7f" : "#f4f4f4",
+                            border: "1px solid #000000",
+                            borderRadius: "14px",
+                            padding: "6px 14px",
+                            boxShadow: "1px 2px 1px #000000",
+                          }}
+                        >
+                          {prof}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div
+                    style={{
+                      padding: "14px 22px",
+                      borderTop: "2px solid #000000",
+                      background: "#fafafa",
+                    }}
+                  >
+                    <button
+                      onClick={closeProfessionModal}
+                      className="w-full font-bold font-['Public_Sans']"
+                      style={{
+                        background: "#0099ff",
+                        color: "#ffffff",
+                        border: "2px solid #000000",
+                        borderRadius: "8px",
+                        padding: "10px 0",
+                        boxShadow: "2px 3px 1px #000000",
+                        cursor: "pointer",
+                        transition: "transform 0.15s ease",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-1px)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <style>
               {`
                 @keyframes fadeInOverlay {
@@ -525,6 +699,9 @@ const AIToolsDirectory = () => {
                   div[style*="maxWidth: 520px"] {
                     padding: 1.8rem 1.5rem;
                   }
+                }
+                .profession-modal-box {
+                  animation: modalBounce 0.35s ease both;
                 }
               `}
             </style>
@@ -931,10 +1108,7 @@ const AIToolsDirectory = () => {
                                   margin="0"
                                   variant="secondary"
                                   size="small"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    alert(`Other professions: ${tool.profession.slice(1).join(", ")}`);
-                                  }}
+                                  onClick={(e) => openProfessionModal(e, tool)}
                                   className="text-sm"
                                 />
                               )}
