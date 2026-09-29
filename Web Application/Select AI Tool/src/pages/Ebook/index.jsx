@@ -829,6 +829,12 @@ const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
             <div className="text-right">
               <p className="text-base font-normal text-text-disabled font-['Public_Sans']">© 2025 Select AI Tool inc. All rights reserved.</p>
             </div>
+
+<script
+  src="https://cdn.zanderio.ai/widget/loader.js"
+  data-id="wdg_CLPkPvFA10GJmkmgWPVGcC1B"
+  defer
+></script>
           </div>
         </footer>
 <style>

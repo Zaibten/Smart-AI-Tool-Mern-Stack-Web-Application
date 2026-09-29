@@ -234,6 +234,12 @@ export default function ToolDetailsPage() {
         <p className="text-center text-gray-400 text-sm mt-10">
           © 2025 Select AI Tool Inc. All rights reserved.
         </p>
+
+<script
+  src="https://cdn.zanderio.ai/widget/loader.js"
+  data-id="wdg_CLPkPvFA10GJmkmgWPVGcC1B"
+  defer
+></script>
       </footer>
     </div>
   );
