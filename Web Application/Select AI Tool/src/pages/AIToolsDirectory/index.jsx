@@ -68,7 +68,8 @@ const AIToolsDirectory = () => {
   // Tidio script
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = "//code.tidio.co/0cod26pfb62euct6ob89ysu1c5j2u5jf.js";
+        // script.src = " //script.src = "//code.tidio.co/0cod26pfb62euct6ob89ysu1c5j2u5jf.js";";
+
     script.async = true;
     document.body.appendChild(script);
     return () => {

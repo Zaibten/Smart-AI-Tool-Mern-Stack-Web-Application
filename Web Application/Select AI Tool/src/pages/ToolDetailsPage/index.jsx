@@ -26,16 +26,7 @@ export default function ToolDetailsPage() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-     useEffect(() => {
-      const script = document.createElement("script");
-      script.src = "//code.tidio.co/0cod26pfb62euct6ob89ysu1c5j2u5jf.js";
-      script.async = true;
-      document.body.appendChild(script);
-  
-      return () => {
-        document.body.removeChild(script); // Clean up on unmount
-      };
-    }, []);
+      
     const { id } = useParams();
     const [tool, setTool] = useState(null);
     const [loading, setLoading] = useState(true);

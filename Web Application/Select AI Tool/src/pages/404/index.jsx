@@ -53,16 +53,7 @@ const NotFound = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   
-     useEffect(() => {
-      const script = document.createElement("script");
-      script.src = "//code.tidio.co/0cod26pfb62euct6ob89ysu1c5j2u5jf.js";
-      script.async = true;
-      document.body.appendChild(script);
-  
-      return () => {
-        document.body.removeChild(script); // Clean up on unmount
-      };
-    }, []);
+      
   
     const [menuOpen, setMenuOpen] = useState(false);
     const [freeMode, setFreeMode] = useState(false); // <-- toggle state
